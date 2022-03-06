@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Card, Button, Container, Row, Col, Jumbotron, Form, Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 class Colors extends React.Component {
 
@@ -13,14 +14,24 @@ class Colors extends React.Component {
     }
     
     componentDidMount() {
-        fetch('http://127.0.0.1:8000/api/colors')
-            .then(response => response.json())
-            .then(json => {
-                console.log(json);
-                this.setState({
-                    isLoaded: true,
-                    colors: json
-                })
+        this.getAllColors();
+    }
+
+    getAllColors() {
+        axios.get('http://127.0.0.1:8000/api/colors')
+        .then(response => {
+            console.log(response);
+            this.setState({
+                isLoaded: true,
+                colors: response.data
+            })
+        })
+    }
+
+    deleteColor = event => {
+        axios.delete(`http://127.0.0.1:8000/api/colors/${event.target.value}`)
+            .then(res => {
+                this.getAllColors();
             })
     }
 
@@ -44,11 +55,13 @@ class Colors extends React.Component {
                       </thead>
                       <tbody>
                          {colors.map(color => (
-                             <tr>
+                             <tr key={color.id}>
                                  <td>{color.id}</td>
                                  <td>{color.name}</td>
                                  <td>{color.hex}</td>
-                                 <td></td>
+                                 <td>
+                                    <Button variant="danger" onClick={this.deleteColor} value={color.id}>Remove</Button>
+                                </td>
                              </tr>
                          ))}
                       </tbody>
