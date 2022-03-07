@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Card, Button, Container, Row, Col, Jumbotron, Form, Table } from 'react-bootstrap';
+import { Card, Button, Container, Row, Col, Jumbotron, Form, Table, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,7 +13,9 @@ class Colors extends React.Component {
             formColor: {
                 name: '',
                 hex: ''
-            }
+            },
+            showMessage: false,
+            message: ''
         }
     }
     
@@ -26,7 +28,11 @@ class Colors extends React.Component {
         .then(response => {
             this.setState({
                 isLoaded: true,
-                colors: response.data
+                colors: response.data,
+                formColor: {
+                    name: '',
+                    hex: ''
+                },
             })
         })
     }
@@ -40,7 +46,11 @@ class Colors extends React.Component {
 
                 this.setState({
                     isLoaded: true,
-                    colors: newArr
+                    colors: newArr,
+                    formColor: {
+                        name: '',
+                        hex: ''
+                    },
                 })
             })
     }
@@ -50,7 +60,9 @@ class Colors extends React.Component {
         axios.post(`http://127.0.0.1:8000/api/colors`, this.state.formColor)
             .then(response => {
                 this.setState({
-                    colors: [...this.state.colors, response.data]
+                    colors: [...this.state.colors, response.data],
+                    showMessage: true,
+                    message: `Color ${response.data.name} successfully inserted.`
                 })
                 
                 this.setState({
@@ -76,7 +88,7 @@ class Colors extends React.Component {
 
     render() {
 
-        let { isLoaded, colors } = this.state;
+        let { isLoaded, colors, showMessage, message } = this.state;
 
         if(!isLoaded) {
             return <div>Loading...</div>
@@ -98,6 +110,12 @@ class Colors extends React.Component {
                             Add
                         </Button>
                     </Form>
+                    <br/>
+                    {showMessage ? 
+                        <Alert >
+                            {message}
+                        </Alert>: ''}
+                    
                     <br/>
                     <Table striped bordered hover>
                       <thead>
