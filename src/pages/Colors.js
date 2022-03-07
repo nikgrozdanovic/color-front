@@ -9,7 +9,11 @@ class Colors extends React.Component {
         super(props);
         this.state = {
             colors: [],
-            isLoaded: false
+            isLoaded: false,
+            formColor: {
+                name: '',
+                hex: ''
+            }
         }
     }
     
@@ -20,7 +24,6 @@ class Colors extends React.Component {
     getAllColors() {
         axios.get('http://127.0.0.1:8000/api/colors')
         .then(response => {
-            console.log(response);
             this.setState({
                 isLoaded: true,
                 colors: response.data
@@ -31,8 +34,44 @@ class Colors extends React.Component {
     deleteColor = event => {
         axios.delete(`http://127.0.0.1:8000/api/colors/${event.target.value}`)
             .then(res => {
-                this.getAllColors();
+                let newArr = this.state.colors.filter((value, index, arr) => {
+                    return value.id != res.data;
+                })
+
+                this.setState({
+                    isLoaded: true,
+                    colors: newArr
+                })
             })
+    }
+
+    handleSubmit = event => {
+        event.preventDefault();
+        axios.post(`http://127.0.0.1:8000/api/colors`, this.state.formColor)
+            .then(response => {
+                this.setState({
+                    colors: [...this.state.colors, response.data]
+                })
+                
+                this.setState({
+                    formColor: {
+                        name: '',
+                        hex: ''
+                    }
+                })
+            })
+    }
+
+    handleChange = event => {
+        event.preventDefault();
+        this.setState({
+            formColor: {
+                ...this.state.formColor,
+                [event.target.name]: event.target.value 
+            }
+            
+        })
+        
     }
 
     render() {
@@ -44,6 +83,22 @@ class Colors extends React.Component {
         } else {
             return (
                 <Container>
+                    <Form onSubmit={this.handleSubmit}>
+                        <Form.Group className="mb-3" >
+                            <Form.Label>Color name</Form.Label>
+                            <Form.Control type="text" placeholder="Enter color name" name="name" onChange={this.handleChange} value={this.state.formColor.name} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Color name</Form.Label>
+                            <Form.Control type="text" placeholder="Enter color name"  name="hex" onChange={this.handleChange} value={this.state.formColor.hex} />
+                        </Form.Group>
+
+                        <Button variant="primary" type="submit">
+                            Add
+                        </Button>
+                    </Form>
+                    <br/>
                     <Table striped bordered hover>
                       <thead>
                           <tr>
