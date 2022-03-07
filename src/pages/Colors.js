@@ -33,6 +33,8 @@ class Colors extends React.Component {
                     name: '',
                     hex: ''
                 },
+                showMessage: false,
+                message: ''
             })
         })
     }
@@ -51,6 +53,8 @@ class Colors extends React.Component {
                         name: '',
                         hex: ''
                     },
+                    showMessage: false,
+                    message: ''
                 })
             })
     }
@@ -80,7 +84,9 @@ class Colors extends React.Component {
             formColor: {
                 ...this.state.formColor,
                 [event.target.name]: event.target.value 
-            }
+            },
+            showMessage: false,
+            message: ''
             
         })
         
